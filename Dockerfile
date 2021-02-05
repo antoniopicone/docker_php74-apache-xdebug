@@ -1,6 +1,6 @@
 FROM php:7.4-apache
 
-RUN apt-get update && apt-get install -y wget 
+RUN apt-get update && apt-get install -y wget iputils-ping net-tools
 
 # install xdebug 
 RUN cd /tmp \
@@ -23,3 +23,16 @@ RUN echo 'xdebug.remote_connect_back=off' >> /usr/local/etc/php/php.ini
 RUN echo 'xdebug.remote_handler="dbgp"' >> /usr/local/etc/php/php.ini
 RUN echo 'xdebug.idekey="VSCODE"' >> /usr/local/etc/php/php.ini
 # RUN echo 'xdebug.remote_log="/var/www/html/xdebug.log"' >> /usr/local/etc/php/php.ini
+
+
+# Installare composer e forse pdo_mysql
+RUN \
+    docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
+    && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
+    && docker-php-ext-install pdo_mysql 
+
+#Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install zip & git
+RUN apt-get update && apt-get install -y zip git
